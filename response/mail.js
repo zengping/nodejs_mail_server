@@ -4,6 +4,7 @@ var url = require("url");
 
 function send(request, response) {
     var path = url.parse(request.url, true);
+    var err = JSON.parse(path.query.content);
 
     var transporter = email.createTransport({
         service: 'qq',
@@ -18,7 +19,12 @@ function send(request, response) {
         to: path.query.to, // 接受者,可以同时发送多个,以逗号隔开  
         subject: path.query.title, // 标题  
         //text: 'Hello world', // 文本  
-        html: path.query.content
+        html: `
+            url: ${err.url},<br>
+            error: ${err.msg},<br>
+            line: ${err.line},<br>
+            col: ${err.col}
+        `
     };
 
     transporter.sendMail(mailOptions, function (err, info) {
